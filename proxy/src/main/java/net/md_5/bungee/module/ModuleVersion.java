@@ -24,7 +24,7 @@ public class ModuleVersion
             {
                 return null;
             }
-            return new ModuleVersion( version, "unknown" );
+            return new ModuleVersion( version, null );
         }
 
         String buildNumber = version.substring( lastColon + 1, version.length() );
@@ -36,5 +36,15 @@ public class ModuleVersion
         }
 
         return new ModuleVersion( buildNumber, gitCommit );
+    }
+
+    @Override
+    public String toString()
+    {
+        if ( git == null )
+        {
+            return "v" + build;
+        }
+        return "v" + build + " (" + git + ")";
     }
 }
