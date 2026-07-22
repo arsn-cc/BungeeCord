@@ -32,7 +32,7 @@ jobs:
       id: version
       run: echo "VERSION=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
     - name: Build and test
-      run: mvn --activate-profiles dist --no-transfer-progress -Dmaven.build.timestamp=${{ steps.version.outputs.VERSION }} package
+      run: mvn --activate-profiles dist --no-transfer-progress -Dspecification.version=${{ steps.version.outputs.VERSION }} package
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:

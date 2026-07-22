@@ -24,6 +24,7 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+        <specification.version>unknown</specification.version>
     </properties>
 
     <dependencies>
@@ -47,7 +48,7 @@
                         <manifestEntries>
                             <Main-Class>net.md_5.bungee.Bootstrap</Main-Class> 
                             <Implementation-Version>${describe}</Implementation-Version>
-                            <Specification-Version>${maven.build.timestamp}</Specification-Version>
+                            <Specification-Version>${specification.version}</Specification-Version>
                             <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
                         </manifestEntries>
                     </archive>
