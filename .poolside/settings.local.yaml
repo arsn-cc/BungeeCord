@@ -1,0 +1,36 @@
+tools:
+    shell:
+        allow:
+            - cd *
+            - git log *
+            - echo *
+            - git branch *
+            - git status
+            - ls *
+            - cat *
+            - head *
+            - git remote add hexacord *
+            - git fetch hexacord *
+            - tail *
+            - grep *
+            - git merge-base *
+            - wc *
+            - git diff *
+            - sort
+            - find *
+            - git ls-tree *
+            - git show *
+            - git checkout *
+            - java *
+            - mvn *
+            - git cherry-pick *
+            - python3 *
+            - sed *
+            - git status *
+            - git add *
+            - git reset HEAD *
+            - git commit *
+            - tee *
+            - which gh
+            - gh auth *
+            - '*'

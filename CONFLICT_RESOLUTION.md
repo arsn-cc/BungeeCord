@@ -4,7 +4,7 @@
 
 This document describes the forward-port of HexaCord (HexagonMC/BungeeCord master) onto the latest upstream BungeeCord (SpigotMC/BungeeCord master, commit `edb28b4a`, version `26.1-R0.1-SNAPSHOT`).
 
-**Branch**: `hexacord-forwardport` (from `origin/master`)
+**Branch**: `master` (from `origin/master`)
 **Merge base**: `ff5727c5ef9c0b56ad35f9816ae6bd660b622cf0` (HexaCord "Revert broken chat PR and align with Spigot")
 **HexaCord commits**: 244 commits since divergence
 **Upstream commits**: 489 commits since divergence
@@ -91,10 +91,10 @@ Due to the significant architectural changes between HexaCord (2016-era) and ups
 - `ModuleManager.java` — Added `TravisCiModuleSource` registration; changed default module URLs from `jenkins://` to `travis-ci://`.
 
 **Files created**:
-- `TravisCiModuleSource.java` — Downloads modules from HexagonMC/BungeeCord GitHub releases.
+- `TravisCiModuleSource.java` — Downloads modules from virtualWinter/BungeeCord GitHub releases.
 
 **Key decisions**:
-- Travis CI module source downloads from `https://github.com/HexagonMC/BungeeCord/releases/download/v{version}/{module}.jar`.
+- Travis CI module source downloads from `https://github.com/virtualWinter/BungeeCord/releases/download/v{version}/{module}.jar`.
 - Default module URLs changed from `jenkins://` to `travis-ci://` to match HexaCord's release infrastructure.
 
 ### 7. Update Checking — BungeeCordLauncher
@@ -104,7 +104,7 @@ Due to the significant architectural changes between HexaCord (2016-era) and ups
 
 **Key decisions**:
 - Self-compiled builds (version "unknown") get a 2-second warning.
-- Release builds check `https://api.github.com/repos/HexagonMC/BungeeCord/releases/latest` for newer versions.
+- Release builds check `https://api.github.com/repos/virtualWinter/BungeeCord/releases/latest` for newer versions.
 - Network failures fall back to a 2-second warning (graceful degradation).
 
 ## Compilation Fixes Applied
