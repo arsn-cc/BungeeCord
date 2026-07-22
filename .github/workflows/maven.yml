@@ -15,9 +15,6 @@ jobs:
 
     name: Build (Java 21)
 
-    outputs:
-      version: ${{ steps.version.outputs.VERSION }}
-
     steps:
     - uses: actions/checkout@v7
       with:
@@ -44,26 +41,12 @@ jobs:
           **/target/*.jar
           !**/target/*-sources.jar
           !**/target/*-javadoc.jar
-
-  release:
-    runs-on: ubuntu-24.04
-
-    name: Create Release
-
-    needs: build
-    if: github.event_name == 'push'
-
-    steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: bungeecord-dist
-        path: artifacts
-    - name: Create or update release
+    - name: Create release
+      if: github.event_name == 'push'
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        VERSION="${{ needs.build.outputs.version }}"
+        VERSION="${{ steps.version.outputs.VERSION }}"
         # Delete existing release if it exists
         gh release view "v${VERSION}" 2>/dev/null && gh release delete "v${VERSION}" --yes || true
         # Create new release
@@ -72,4 +55,4 @@ jobs:
           --notes "Automated release for commit ${GITHUB_SHA}" \
           --target "${GITHUB_SHA}"
         # Upload all JARs as release assets
-        gh release upload "v${VERSION}" $(find artifacts -name "*.jar" -type f) --clobber
+        gh release upload "v${VERSION}" $(find . -path "*/target/*.jar" -not -name "*-sources.jar" -not -name "*-javadoc.jar" -type f) --clobber
