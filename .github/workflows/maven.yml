@@ -1,6 +1,10 @@
-name: Maven Build
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
 
 jobs:
   build:
@@ -11,7 +15,7 @@ jobs:
       matrix:
         java: [17, 21, 25]
 
-    name: Java ${{ matrix.java }}
+    name: Build (Java ${{ matrix.java }})
 
     steps:
     - uses: actions/checkout@v7
@@ -19,5 +23,49 @@ jobs:
       with:
         distribution: zulu
         java-version: ${{ matrix.java }}
-    - run: java -version && mvn --version
-    - run: mvn --activate-profiles dist --no-transfer-progress package
+        cache: maven
+    - name: Display Java version
+      run: java -version
+    - name: Display Maven version
+      run: mvn --version
+    - name: Build and test
+      run: mvn --activate-profiles dist --no-transfer-progress package
+    - name: Upload artifacts
+      if: matrix.java == 21
+      uses: actions/upload-artifact@v4
+      with:
+        name: bungeecord-dist
+        path: |
+          **/target/*.jar
+          !**/target/*-sources.jar
+          !**/target/*-javadoc.jar
+
+  checkstyle:
+    runs-on: ubuntu-24.04
+
+    name: Checkstyle
+
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-java@v5
+      with:
+        distribution: zulu
+        java-version: 21
+        cache: maven
+    - name: Run Checkstyle
+      run: mvn checkstyle:check --no-transfer-progress
+
+  codeql:
+    runs-on: ubuntu-24.04
+
+    name: CodeQL Analysis
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java
+        build-mode: manual
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
