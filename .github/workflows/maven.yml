@@ -15,6 +15,9 @@ jobs:
 
     name: Build (Java 21)
 
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+
     steps:
     - uses: actions/checkout@v7
       with:
@@ -51,24 +54,16 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-    - uses: actions/checkout@v7
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
       with:
-        fetch-depth: 0
-    - uses: actions/setup-java@v5
-      with:
-        distribution: zulu
-        java-version: 21
-        cache: maven
-    - name: Get version
-      id: version
-      run: echo "VERSION=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
-    - name: Build
-      run: mvn --activate-profiles dist --no-transfer-progress -Dmaven.build.timestamp=${{ steps.version.outputs.VERSION }} package
+        name: bungeecord-dist
+        path: artifacts
     - name: Create or update release
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        VERSION="${{ steps.version.outputs.VERSION }}"
+        VERSION="${{ needs.build.outputs.version }}"
         # Delete existing release if it exists
         gh release view "v${VERSION}" 2>/dev/null && gh release delete "v${VERSION}" --yes || true
         # Create new release
@@ -77,4 +72,4 @@ jobs:
           --notes "Automated release for commit ${GITHUB_SHA}" \
           --target "${GITHUB_SHA}"
         # Upload all JARs as release assets
-        gh release upload "v${VERSION}" **/target/*.jar --clobber
+        gh release upload "v${VERSION}" $(find artifacts -name "*.jar" -type f) --clobber
