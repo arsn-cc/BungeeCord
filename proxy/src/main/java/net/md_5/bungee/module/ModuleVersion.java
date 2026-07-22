@@ -19,7 +19,12 @@ public class ModuleVersion
 
         if ( lastColon == -1 || secondLastColon == -1 )
         {
-            return null;
+            // Handle version strings without colons (e.g., commit count "2323")
+            if ( "unknown".equals( version ) )
+            {
+                return null;
+            }
+            return new ModuleVersion( version, "unknown" );
         }
 
         String buildNumber = version.substring( lastColon + 1, version.length() );

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -35,7 +36,7 @@ public class ModuleManager
     {
         moduleDirectory.mkdir();
 
-        ModuleVersion bungeeVersion = ModuleVersion.parse( proxy.getVersion() );
+        ModuleVersion bungeeVersion = ModuleVersion.parse( BungeeCord.getInstance().getSpecificationVersion() );
         if ( bungeeVersion == null )
         {
             proxy.getLogger().warning( "Couldn't detect bungee version. Custom build?" );
