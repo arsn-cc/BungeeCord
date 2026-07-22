@@ -2,14 +2,12 @@ package net.md_5.bungee.connection;
 
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.BungeeServerInfo;
-import net.md_5.bungee.PlayerInfoSerializer;
 import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.chat.VersionedComponentSerializer;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.netty.PipelineUtils;
@@ -17,6 +15,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
 import net.md_5.bungee.protocol.MinecraftEncoder;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.Handshake;
 import net.md_5.bungee.protocol.packet.StatusRequest;
 import net.md_5.bungee.protocol.packet.StatusResponse;
@@ -27,9 +26,6 @@ import net.md_5.bungee.util.QuietException;
 public class PingHandler extends PacketHandler
 {
 
-    static final Gson gson = VersionedComponentSerializer.getDefault().getGson().newBuilder()
-            .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer() )
-            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
     private final ServerInfo target;
     private final Callback<ServerPing> callback;
     private final int protocol;
@@ -68,6 +64,7 @@ public class PingHandler extends PacketHandler
     @Override
     public void handle(StatusResponse statusResponse) throws Exception
     {
+        Gson gson = protocol == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson;
         ServerPing serverPing = gson.fromJson( statusResponse.getResponse(), ServerPing.class );
         ( (BungeeServerInfo) target ).cachePing( serverPing );
         callback.done( serverPing, null );

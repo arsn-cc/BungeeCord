@@ -33,8 +33,12 @@ public class ScoreboardObjective extends DefinedPacket
     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
     {
         name = readString( buf );
+        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_7_6 )
+        {
+            value = readEitherBaseComponent( buf, protocolVersion, true );
+        }
         action = buf.readByte();
-        if ( action == 0 || action == 2 )
+        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 && ( action == 0 || action == 2 ) )
         {
             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
             {
@@ -56,8 +60,12 @@ public class ScoreboardObjective extends DefinedPacket
     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
     {
         writeString( name, buf );
+        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_7_6 )
+        {
+            writeEitherBaseComponent( value, buf, protocolVersion );
+        }
         buf.writeByte( action );
-        if ( action == 0 || action == 2 )
+        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 && ( action == 0 || action == 2 ) )
         {
             writeEitherBaseComponent( value, buf, protocolVersion );
             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )

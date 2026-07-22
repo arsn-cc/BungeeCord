@@ -65,8 +65,11 @@ public class Configuration implements ProxyConfig
     private boolean ipForward;
     private Favicon favicon;
     private int compressionThreshold = 256;
+    private String customServerName = "HexaCord";
+    private boolean alwaysHandlePackets = false;
     private boolean preventProxyConnections;
     private boolean forgeSupport;
+    private int pluginChannelLimit = 128;
     private boolean rejectTransfers;
     private int maxPacketsPerSecond = 1 << 12;
     private int maxPacketDataPerSecond = 1 << 25;
@@ -103,8 +106,11 @@ public class Configuration implements ProxyConfig
         throttleLimit = adapter.getInt( "connection_throttle_limit", throttleLimit );
         ipForward = adapter.getBoolean( "ip_forward", ipForward );
         compressionThreshold = adapter.getInt( "network_compression_threshold", compressionThreshold );
+        customServerName = adapter.getString( "custom_server_name", "HexaCord" );
+        alwaysHandlePackets = adapter.getBoolean( "always_handle_packets", false );
         preventProxyConnections = adapter.getBoolean( "prevent_proxy_connections", preventProxyConnections );
         forgeSupport = adapter.getBoolean( "forge_support", forgeSupport );
+        pluginChannelLimit = adapter.getInt( "registered_plugin_channels_limit", pluginChannelLimit );
         rejectTransfers = adapter.getBoolean( "reject_transfers", rejectTransfers );
         maxPacketsPerSecond = adapter.getInt( "max_packets_per_second", maxPacketsPerSecond );
         maxPacketDataPerSecond = adapter.getInt( "max_packets_data_per_second", maxPacketDataPerSecond );
@@ -165,5 +171,23 @@ public class Configuration implements ProxyConfig
     public Favicon getFaviconObject()
     {
         return favicon;
+    }
+
+    @Override
+    public String getCustomServerName()
+    {
+        return customServerName;
+    }
+
+    @Override
+    public boolean getAlwaysHandlePackets()
+    {
+        return alwaysHandlePackets;
+    }
+
+    @Override
+    public int getPluginChannelLimit()
+    {
+        return pluginChannelLimit;
     }
 }

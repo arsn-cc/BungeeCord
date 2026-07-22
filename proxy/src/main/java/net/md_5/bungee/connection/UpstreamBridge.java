@@ -98,7 +98,7 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public boolean shouldHandle(PacketWrapper packet) throws Exception
     {
-        return con.getServer() != null || packet.packet instanceof PluginMessage || packet.packet instanceof CookieResponse || packet.packet instanceof LoginPayloadResponse;
+        return bungee.getConfig().getAlwaysHandlePackets() || con.getServer() != null || packet.packet instanceof PluginMessage || packet.packet instanceof CookieResponse || packet.packet instanceof LoginPayloadResponse;
     }
 
     @Override

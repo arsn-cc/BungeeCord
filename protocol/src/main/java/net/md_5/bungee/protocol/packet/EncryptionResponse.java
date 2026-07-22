@@ -22,35 +22,49 @@ public class EncryptionResponse extends DefinedPacket
 
     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
     {
-        sharedSecret = readArray( buf, 128 );
-        if ( protocolVersion < ProtocolConstants.MINECRAFT_1_19 || protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3 || buf.readBoolean() )
+        if ( protocolVersion < ProtocolConstants.MINECRAFT_1_8 )
         {
-            verifyToken = readArray( buf, 128 );
+            sharedSecret = readArrayLegacy( buf );
+            verifyToken = readArrayLegacy( buf );
         } else
         {
-            encryptionData = new EncryptionData( buf.readLong(), readArray( buf ) );
+            sharedSecret = readArray( buf, 128 );
+            if ( protocolVersion < ProtocolConstants.MINECRAFT_1_19 || protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3 || buf.readBoolean() )
+            {
+                verifyToken = readArray( buf, 128 );
+            } else
+            {
+                encryptionData = new EncryptionData( buf.readLong(), readArray( buf ) );
+            }
         }
     }
 
     @Override
     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
     {
-        writeArray( sharedSecret, buf );
-        if ( verifyToken != null )
+        if ( protocolVersion < ProtocolConstants.MINECRAFT_1_8 )
         {
-            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_19 && protocolVersion <= ProtocolConstants.MINECRAFT_1_19_3 )
-            {
-                buf.writeBoolean( true );
-            }
-            writeArray( verifyToken, buf );
+            writeArrayLegacy( sharedSecret, buf, false );
+            writeArrayLegacy( verifyToken, buf, false );
         } else
         {
-            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_19 && protocolVersion <= ProtocolConstants.MINECRAFT_1_19_3 )
+            writeArray( sharedSecret, buf );
+            if ( verifyToken != null )
             {
-                buf.writeBoolean( false );
+                if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_19 && protocolVersion <= ProtocolConstants.MINECRAFT_1_19_3 )
+                {
+                    buf.writeBoolean( true );
+                }
+                writeArray( verifyToken, buf );
+            } else
+            {
+                if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_19 && protocolVersion <= ProtocolConstants.MINECRAFT_1_19_3 )
+                {
+                    buf.writeBoolean( false );
+                }
+                buf.writeLong( encryptionData.getSalt() );
+                writeArray( encryptionData.getSignature(), buf );
             }
-            buf.writeLong( encryptionData.getSalt() );
-            writeArray( encryptionData.getSignature(), buf );
         }
     }
 

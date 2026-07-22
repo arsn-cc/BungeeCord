@@ -6,6 +6,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.Gson;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
@@ -49,8 +50,10 @@ import lombok.Locked;
 import lombok.Setter;
 import lombok.Synchronized;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ReconnectHandler;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -60,6 +63,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+import net.md_5.bungee.chat.VersionedComponentSerializer;
 import net.md_5.bungee.command.CommandBungee;
 import net.md_5.bungee.command.CommandEnd;
 import net.md_5.bungee.command.CommandIP;
@@ -105,6 +109,12 @@ public class BungeeCord extends ProxyServer
      */
     @Getter
     public final Configuration config = new Configuration();
+    public final Gson gson = VersionedComponentSerializer.getDefault().getGson().newBuilder()
+            .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer( ProtocolConstants.MINECRAFT_1_7_6 ) )
+            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
+    public final Gson gsonLegacy = VersionedComponentSerializer.getDefault().getGson().newBuilder()
+            .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer( ProtocolConstants.MINECRAFT_1_7_2 ) )
+            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
     /**
      * Localization formats.
      */
@@ -538,7 +548,7 @@ public class BungeeCord extends ProxyServer
     @Override
     public String getName()
     {
-        return "BungeeCord";
+        return config.getCustomServerName();
     }
 
     @Override
